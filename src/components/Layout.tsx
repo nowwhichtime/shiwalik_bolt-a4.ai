@@ -1,148 +1,153 @@
-import React, { useEffect, useState } from 'react';
-import { ChevronDown, Sparkles, Users, Award, TrendingUp } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { Menu, X, Sun, Moon, Bell, User, Home, Users, Award, TrendingUp, BookOpen } from 'lucide-react';
+import { useTheme } from '../contexts/ThemeContext';
+import { useAuth } from '../contexts/AuthContext';
+import { useNotifications } from '../contexts/NotificationContext';
+import AccountDropdown from './ui/AccountDropdown';
+import NotificationDropdown from './ui/NotificationDropdown';
 
-const Home: React.FC = () => {
-  const [isVisible, setIsVisible] = useState(false);
+interface LayoutProps {
+  children: React.ReactNode;
+}
 
-  useEffect(() => {
-    setIsVisible(true);
-  }, []);
+const Layout: React.FC<LayoutProps> = ({ children }) => {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { theme, toggleTheme } = useTheme();
+  const { isAuthenticated, isEditorMode } = useAuth();
+  const { pendingCount } = useNotifications();
+  const location = useLocation();
 
-  const scrollToContent = () => {
-    window.scrollTo({
-      top: window.innerHeight,
-      behavior: 'smooth'
-    });
-  };
-
-  const stats = [
-    { icon: Users, label: 'Total Students', value: '156', color: 'from-blue-500 to-blue-600' },
-    { icon: Award, label: 'Achievements', value: '47', color: 'from-purple-500 to-purple-600' },
-    { icon: TrendingUp, label: 'Academic Excellence', value: '94%', color: 'from-pink-500 to-pink-600' },
-    { icon: Sparkles, label: 'House Ranking', value: '#1', color: 'from-orange-500 to-orange-600' },
+  const navigation = [
+    { name: 'Home', href: '/', icon: Home },
+    { name: 'Students', href: '/students', icon: Users },
+    { name: 'Academic', href: '/academic', icon: Award },
+    { name: 'Movement', href: '/movement', icon: TrendingUp },
+    { name: 'About House', href: '/about', icon: BookOpen },
   ];
 
+  const isActive = (path: string) => location.pathname === path;
+
   return (
-    <div className="min-h-screen bg-white dark:bg-transparent">
-      {/* Hero Section */}
-      <section className="h-screen flex flex-col items-center justify-center px-4 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-red-100/50 to-pink-100/50 dark:from-red-900/30 dark:to-black/50"></div>
-        <div className="absolute inset-0">
-          <div className="absolute top-20 left-20 w-72 h-72 bg-red-200/30 dark:bg-red-500/20 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-20 right-20 w-96 h-96 bg-red-300/30 dark:bg-red-600/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        </div>
-        
-        <div className={`text-center z-10 transition-all duration-1000 ${
-          isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-        }`}>
-          <h1 className="text-6xl md:text-8xl font-bold mb-6 bg-gradient-to-r from-gray-900 via-purple-600 to-pink-600 dark:from-white dark:via-purple-200 dark:to-pink-200 bg-clip-text text-transparent">
-            Welcome to
-          </h1>
-          <h2 className="text-4xl md:text-6xl font-bold mb-8 bg-gradient-to-r from-red-600 to-red-800 dark:from-red-400 dark:to-red-300 bg-clip-text text-transparent">
-            Shiwalik House
-          </h2>
-          <p className="text-xl md:text-2xl text-gray-700 dark:text-gray-300 mb-12 max-w-2xl leading-relaxed">
-            Excellence in Education, Character, and Leadership
-          </p>
-          
-          <div className="flex flex-col sm:flex-row gap-6 justify-center">
-            <Link
-              to="/students"
-              className="group bg-gradient-to-r from-red-600 to-red-800 hover:from-red-700 hover:to-red-900 text-white px-8 py-4 rounded-2xl font-semibold text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-xl"
-            >
-              Explore Students
-              <span className="inline-block ml-2 group-hover:translate-x-1 transition-transform">→</span>
-            </Link>
-            <Link
-              to="/about"
-              className="bg-white/80 hover:bg-white dark:bg-red-950/50 dark:hover:bg-red-950/70 backdrop-blur-sm text-gray-900 dark:text-white px-8 py-4 rounded-2xl font-semibold text-lg border border-gray-300 dark:border-red-700/50 hover:border-gray-400 dark:hover:border-red-600/70 transition-all duration-300 transform hover:scale-105"
-            >
-              About House
-            </Link>
-          </div>
-        </div>
-
-        <button
-          onClick={scrollToContent}
-          className="absolute bottom-10 left-1/2 transform -translate-x-1/2 p-4 rounded-full bg-white/80 hover:bg-white dark:bg-red-950/50 dark:hover:bg-red-950/70 backdrop-blur-sm border border-gray-300 dark:border-red-700/50 hover:border-gray-400 dark:hover:border-red-600/70 transition-all duration-300 animate-bounce"
-        >
-          <ChevronDown className="h-6 w-6 text-gray-900 dark:text-white" />
-        </button>
-      </section>
-
-      {/* Stats Section */}
-      <section className="py-20 px-4 bg-gray-50 dark:bg-transparent">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h3 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">House at a Glance</h3>
-            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-              Discover the achievements and excellence that define Shiwalik House
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {stats.map((stat, index) => {
-              const IconComponent = stat.icon;
-              return (
-                <div
-                  key={index}
-                  className="group bg-white dark:bg-red-950/30 backdrop-blur-sm rounded-2xl p-8 border border-gray-200 dark:border-red-800/30 hover:border-gray-300 dark:hover:border-red-700/50 transition-all duration-300 transform hover:scale-105 hover:shadow-xl"
-                >
-                  <div className={`inline-flex p-4 rounded-2xl bg-gradient-to-r ${index === 0 ? 'from-red-500 to-red-600' : index === 1 ? 'from-red-600 to-red-700' : index === 2 ? 'from-red-700 to-red-800' : 'from-red-800 to-red-900'} mb-6 group-hover:scale-110 transition-transform duration-300`}>
-                    <IconComponent className="h-8 w-8 text-white" />
-                  </div>
-                  <h4 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">{stat.value}</h4>
-                  <p className="text-gray-600 dark:text-gray-300 font-medium">{stat.label}</p>
+    <div className="min-h-screen bg-white dark:bg-gradient-to-br dark:from-red-950 dark:via-red-900 dark:to-black transition-all duration-300">
+      {/* Header */}
+      <header className="bg-white/95 dark:bg-red-950/95 backdrop-blur-sm border-b border-gray-200 dark:border-red-800/50 sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            {/* Logo and Mobile Menu */}
+            <div className="flex items-center">
+              <button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="md:hidden p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-red-800/50 transition-colors"
+              >
+                {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              </button>
+              
+              <Link to="/" className="flex items-center ml-2 md:ml-0">
+                <div className="w-10 h-10 bg-gradient-to-r from-red-600 to-red-800 rounded-xl flex items-center justify-center mr-3">
+                  <span className="text-white font-bold text-lg">S</span>
                 </div>
-              );
-            })}
+                <div>
+                  <h1 className="text-xl font-bold text-gray-900 dark:text-white">Shiwalik House</h1>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Management Portal</p>
+                </div>
+              </Link>
+            </div>
+
+            {/* Desktop Navigation */}
+            <nav className="hidden md:flex space-x-1">
+              {navigation.map((item) => {
+                const IconComponent = item.icon;
+                return (
+                  <Link
+                    key={item.name}
+                    to={item.href}
+                    className={`flex items-center px-4 py-2 rounded-xl font-medium transition-all duration-200 ${
+                      isActive(item.href)
+                        ? 'bg-gradient-to-r from-red-600 to-red-700 text-white shadow-lg'
+                        : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-red-800/50 hover:text-gray-900 dark:hover:text-white'
+                    }`}
+                  >
+                    <IconComponent className="h-4 w-4 mr-2" />
+                    {item.name}
+                  </Link>
+                );
+              })}
+            </nav>
+
+            {/* Right Side Icons */}
+            <div className="flex items-center space-x-3">
+              {/* Editor Mode Indicator */}
+              {isAuthenticated && isEditorMode && (
+                <div className="hidden sm:flex items-center px-3 py-1 bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs font-semibold rounded-full">
+                  <span className="w-2 h-2 bg-white rounded-full mr-2 animate-pulse"></span>
+                  Editor Mode
+                </div>
+              )}
+
+              {/* Theme Toggle */}
+              <button
+                onClick={toggleTheme}
+                className="p-2 rounded-xl bg-gray-100 dark:bg-red-800/50 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-red-700/50 transition-all duration-200"
+              >
+                {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+              </button>
+
+              {/* Notifications */}
+              <NotificationDropdown>
+                <button className="relative p-2 rounded-xl bg-gray-100 dark:bg-red-800/50 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-red-700/50 transition-all duration-200">
+                  <Bell className="h-5 w-5" />
+                  {pendingCount > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-semibold">
+                      {pendingCount}
+                    </span>
+                  )}
+                </button>
+              </NotificationDropdown>
+
+              {/* Account */}
+              <AccountDropdown>
+                <button className="p-2 rounded-xl bg-gray-100 dark:bg-red-800/50 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-red-700/50 transition-all duration-200">
+                  <User className="h-5 w-5" />
+                </button>
+              </AccountDropdown>
+            </div>
           </div>
         </div>
-      </section>
 
-      {/* Features Section */}
-      <section className="py-20 px-4 bg-white dark:bg-transparent">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h3 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">What We Offer</h3>
-            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-              Comprehensive management and tracking for all aspects of student life
-            </p>
+        {/* Mobile Menu */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden bg-white dark:bg-red-950 border-t border-gray-200 dark:border-red-800/50">
+            <div className="px-4 py-2 space-y-1">
+              {navigation.map((item) => {
+                const IconComponent = item.icon;
+                return (
+                  <Link
+                    key={item.name}
+                    to={item.href}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`flex items-center px-4 py-3 rounded-xl font-medium transition-all duration-200 ${
+                      isActive(item.href)
+                        ? 'bg-gradient-to-r from-red-600 to-red-700 text-white'
+                        : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-red-800/50'
+                    }`}
+                  >
+                    <IconComponent className="h-5 w-5 mr-3" />
+                    {item.name}
+                  </Link>
+                );
+              })}
+            </div>
           </div>
+        )}
+      </header>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <Link
-              to="/students"
-              className="group bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/50 dark:to-red-800/50 backdrop-blur-sm rounded-2xl p-8 border border-red-200 dark:border-red-700/30 hover:border-red-300 dark:hover:border-red-600/50 transition-all duration-300 transform hover:scale-105"
-            >
-              <Users className="h-12 w-12 text-red-600 dark:text-red-400 mb-6 group-hover:scale-110 transition-transform" />
-              <h4 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Student Management</h4>
-              <p className="text-gray-600 dark:text-gray-300">Complete student profiles with academic records, family details, and achievements.</p>
-            </Link>
-
-            <Link
-              to="/academic"
-              className="group bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/40 dark:to-red-800/40 backdrop-blur-sm rounded-2xl p-8 border border-red-200 dark:border-red-700/30 hover:border-red-300 dark:hover:border-red-600/50 transition-all duration-300 transform hover:scale-105"
-            >
-              <Award className="h-12 w-12 text-red-600 dark:text-red-400 mb-6 group-hover:scale-110 transition-transform" />
-              <h4 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Academic Performance</h4>
-              <p className="text-gray-600 dark:text-gray-300">Track grades, performance trends, and academic achievements across all classes.</p>
-            </Link>
-
-            <Link
-              to="/movement"
-              className="group bg-gradient-to-br from-pink-50 to-pink-100 dark:from-pink-900/50 dark:to-pink-800/50 backdrop-blur-sm rounded-2xl p-8 border border-pink-200 dark:border-pink-500/30 hover:border-pink-300 dark:hover:border-pink-400/50 transition-all duration-300 transform hover:scale-105"
-            >
-              <TrendingUp className="h-12 w-12 text-pink-600 dark:text-pink-400 mb-6 group-hover:scale-110 transition-transform" />
-              <h4 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Movement Register</h4>
-              <p className="text-gray-600 dark:text-gray-300">Digital leave request system with approval workflow and notifications.</p>
-            </Link>
-          </div>
-        </div>
-      </section>
+      {/* Main Content */}
+      <main className="flex-1">
+        {children}
+      </main>
     </div>
   );
 };
 
-export default Home;
+export default Layout;

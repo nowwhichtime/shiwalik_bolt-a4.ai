@@ -8,7 +8,6 @@ interface AccountDropdownProps {
 const AccountDropdown: React.FC<AccountDropdownProps> = ({ children }) => {
   const [isOpen, setIsOpen] = useState(false);
   const { user, isAuthenticated, isEditorMode, logout, toggleEditorMode } = useAuth();
-  const [showLoginModal, setShowLoginModal] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -24,7 +23,8 @@ const AccountDropdown: React.FC<AccountDropdownProps> = ({ children }) => {
 
   const handleLogin = () => {
     setIsOpen(false);
-    setShowLoginModal(true);
+    // Trigger login modal
+    window.dispatchEvent(new CustomEvent('openLoginModal'));
   };
 
   return (
@@ -34,10 +34,10 @@ const AccountDropdown: React.FC<AccountDropdownProps> = ({ children }) => {
       </div>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50">
+        <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-red-950 rounded-xl shadow-lg border border-gray-200 dark:border-red-700/50 py-2 z-50">
           {isAuthenticated ? (
             <>
-              <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-700">
+              <div className="px-4 py-2 border-b border-gray-200 dark:border-red-700/50">
                 <p className="text-sm font-medium text-gray-900 dark:text-white">
                   Welcome, {user?.username}
                 </p>
@@ -50,7 +50,7 @@ const AccountDropdown: React.FC<AccountDropdownProps> = ({ children }) => {
                     toggleEditorMode();
                     setIsOpen(false);
                   }}
-                  className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                  className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-red-800/50 transition-colors"
                 >
                   {isEditorMode ? 'Disable Editor Mode' : 'Enable Editor Mode'}
                 </button>
@@ -61,7 +61,7 @@ const AccountDropdown: React.FC<AccountDropdownProps> = ({ children }) => {
                   logout();
                   setIsOpen(false);
                 }}
-                className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-red-800/50 transition-colors"
               >
                 Logout
               </button>
@@ -69,21 +69,11 @@ const AccountDropdown: React.FC<AccountDropdownProps> = ({ children }) => {
           ) : (
             <button
               onClick={handleLogin}
-              className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-red-800/50 transition-colors"
             >
               Login
             </button>
           )}
-        </div>
-      )}
-
-      {/* Login Modal Trigger */}
-      {showLoginModal && (
-        <div 
-          className="fixed inset-0 z-[100]"
-          onClick={() => setShowLoginModal(false)}
-        >
-          {/* This will trigger the login modal via global state */}
         </div>
       )}
     </div>
