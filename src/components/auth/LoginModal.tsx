@@ -1,130 +1,148 @@
-import React, { useState } from 'react';
-import { X, Lock, AlertCircle } from 'lucide-react';
-import { useAuth } from '../../contexts/AuthContext';
+import React, { useEffect, useState } from 'react';
+import { ChevronDown, Sparkles, Users, Award, TrendingUp } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
-const LoginModal: React.FC = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const { login, loginAttempts, lockoutTime } = useAuth();
+const Home: React.FC = () => {
+  const [isVisible, setIsVisible] = useState(false);
 
-  const isLockedOut = lockoutTime && new Date() < lockoutTime;
-  const remainingTime = isLockedOut ? Math.ceil((lockoutTime!.getTime() - new Date().getTime()) / (1000 * 60)) : 0;
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-
-    if (isLockedOut) {
-      setError(`Account locked. Please try again after ${remainingTime} minutes.`);
-      return;
-    }
-
-    const success = login(username, password);
-    if (success) {
-      setIsOpen(false);
-      setUsername('');
-      setPassword('');
-      setError('');
-    } else {
-      setError('Invalid credentials. Please try again.');
-      setPassword('');
-    }
-  };
-
-  // Listen for global login trigger
-  React.useEffect(() => {
-    const handleGlobalLogin = () => setIsOpen(true);
-    window.addEventListener('openLoginModal', handleGlobalLogin);
-    return () => window.removeEventListener('openLoginModal', handleGlobalLogin);
+  useEffect(() => {
+    setIsVisible(true);
   }, []);
 
-  if (!isOpen) return null;
+  const scrollToContent = () => {
+    window.scrollTo({
+      top: window.innerHeight,
+      behavior: 'smooth'
+    });
+  };
+
+  const stats = [
+    { icon: Users, label: 'Total Students', value: '156', color: 'from-blue-500 to-blue-600' },
+    { icon: Award, label: 'Achievements', value: '47', color: 'from-purple-500 to-purple-600' },
+    { icon: TrendingUp, label: 'Academic Excellence', value: '94%', color: 'from-pink-500 to-pink-600' },
+    { icon: Sparkles, label: 'House Ranking', value: '#1', color: 'from-orange-500 to-orange-600' },
+  ];
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md p-6 relative">
+    <div className="min-h-screen bg-white dark:bg-transparent">
+      {/* Hero Section */}
+      <section className="h-screen flex flex-col items-center justify-center px-4 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-red-100/50 to-pink-100/50 dark:from-red-900/30 dark:to-black/50"></div>
+        <div className="absolute inset-0">
+          <div className="absolute top-20 left-20 w-72 h-72 bg-red-200/30 dark:bg-red-500/20 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-20 right-20 w-96 h-96 bg-red-300/30 dark:bg-red-600/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        </div>
+        
+        <div className={`text-center z-10 transition-all duration-1000 ${
+          isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+        }`}>
+          <h1 className="text-6xl md:text-8xl font-bold mb-6 bg-gradient-to-r from-gray-900 via-purple-600 to-pink-600 dark:from-white dark:via-purple-200 dark:to-pink-200 bg-clip-text text-transparent">
+            Welcome to
+          </h1>
+          <h2 className="text-4xl md:text-6xl font-bold mb-8 bg-gradient-to-r from-red-600 to-red-800 dark:from-red-400 dark:to-red-300 bg-clip-text text-transparent">
+            Shiwalik House
+          </h2>
+          <p className="text-xl md:text-2xl text-gray-700 dark:text-gray-300 mb-12 max-w-2xl leading-relaxed">
+            Excellence in Education, Character, and Leadership
+          </p>
+          
+          <div className="flex flex-col sm:flex-row gap-6 justify-center">
+            <Link
+              to="/students"
+              className="group bg-gradient-to-r from-red-600 to-red-800 hover:from-red-700 hover:to-red-900 text-white px-8 py-4 rounded-2xl font-semibold text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-xl"
+            >
+              Explore Students
+              <span className="inline-block ml-2 group-hover:translate-x-1 transition-transform">→</span>
+            </Link>
+            <Link
+              to="/about"
+              className="bg-white/80 hover:bg-white dark:bg-red-950/50 dark:hover:bg-red-950/70 backdrop-blur-sm text-gray-900 dark:text-white px-8 py-4 rounded-2xl font-semibold text-lg border border-gray-300 dark:border-red-700/50 hover:border-gray-400 dark:hover:border-red-600/70 transition-all duration-300 transform hover:scale-105"
+            >
+              About House
+            </Link>
+          </div>
+        </div>
+
         <button
-          onClick={() => setIsOpen(false)}
-          className="absolute top-4 right-4 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+          onClick={scrollToContent}
+          className="absolute bottom-10 left-1/2 transform -translate-x-1/2 p-4 rounded-full bg-white/80 hover:bg-white dark:bg-red-950/50 dark:hover:bg-red-950/70 backdrop-blur-sm border border-gray-300 dark:border-red-700/50 hover:border-gray-400 dark:hover:border-red-600/70 transition-all duration-300 animate-bounce"
         >
-          <X className="h-5 w-5 text-gray-500" />
+          <ChevronDown className="h-6 w-6 text-gray-900 dark:text-white" />
         </button>
+      </section>
 
-        <div className="text-center mb-6">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-purple-100 dark:bg-purple-900 rounded-full mb-4">
-            <Lock className="h-8 w-8 text-purple-600 dark:text-purple-400" />
+      {/* Stats Section */}
+      <section className="py-20 px-4 bg-gray-50 dark:bg-transparent">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h3 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">House at a Glance</h3>
+            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+              Discover the achievements and excellence that define Shiwalik House
+            </p>
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Admin Login</h2>
-          <p className="text-gray-600 dark:text-gray-400 mt-2">
-            Access the administrative features
-          </p>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {stats.map((stat, index) => {
+              const IconComponent = stat.icon;
+              return (
+                <div
+                  key={index}
+                  className="group bg-white dark:bg-red-950/30 backdrop-blur-sm rounded-2xl p-8 border border-gray-200 dark:border-red-800/30 hover:border-gray-300 dark:hover:border-red-700/50 transition-all duration-300 transform hover:scale-105 hover:shadow-xl"
+                >
+                  <div className={`inline-flex p-4 rounded-2xl bg-gradient-to-r ${index === 0 ? 'from-red-500 to-red-600' : index === 1 ? 'from-red-600 to-red-700' : index === 2 ? 'from-red-700 to-red-800' : 'from-red-800 to-red-900'} mb-6 group-hover:scale-110 transition-transform duration-300`}>
+                    <IconComponent className="h-8 w-8 text-white" />
+                  </div>
+                  <h4 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">{stat.value}</h4>
+                  <p className="text-gray-600 dark:text-gray-300 font-medium">{stat.label}</p>
+                </div>
+              );
+            })}
+          </div>
         </div>
+      </section>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Username
-            </label>
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-              placeholder="Enter username"
-              required
-              disabled={isLockedOut}
-            />
+      {/* Features Section */}
+      <section className="py-20 px-4 bg-white dark:bg-transparent">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h3 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">What We Offer</h3>
+            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+              Comprehensive management and tracking for all aspects of student life
+            </p>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Password
-            </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-              placeholder="Enter password"
-              required
-              disabled={isLockedOut}
-            />
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <Link
+              to="/students"
+              className="group bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/50 dark:to-red-800/50 backdrop-blur-sm rounded-2xl p-8 border border-red-200 dark:border-red-700/30 hover:border-red-300 dark:hover:border-red-600/50 transition-all duration-300 transform hover:scale-105"
+            >
+              <Users className="h-12 w-12 text-red-600 dark:text-red-400 mb-6 group-hover:scale-110 transition-transform" />
+              <h4 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Student Management</h4>
+              <p className="text-gray-600 dark:text-gray-300">Complete student profiles with academic records, family details, and achievements.</p>
+            </Link>
+
+            <Link
+              to="/academic"
+              className="group bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/40 dark:to-red-800/40 backdrop-blur-sm rounded-2xl p-8 border border-red-200 dark:border-red-700/30 hover:border-red-300 dark:hover:border-red-600/50 transition-all duration-300 transform hover:scale-105"
+            >
+              <Award className="h-12 w-12 text-red-600 dark:text-red-400 mb-6 group-hover:scale-110 transition-transform" />
+              <h4 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Academic Performance</h4>
+              <p className="text-gray-600 dark:text-gray-300">Track grades, performance trends, and academic achievements across all classes.</p>
+            </Link>
+
+            <Link
+              to="/movement"
+              className="group bg-gradient-to-br from-pink-50 to-pink-100 dark:from-pink-900/50 dark:to-pink-800/50 backdrop-blur-sm rounded-2xl p-8 border border-pink-200 dark:border-pink-500/30 hover:border-pink-300 dark:hover:border-pink-400/50 transition-all duration-300 transform hover:scale-105"
+            >
+              <TrendingUp className="h-12 w-12 text-pink-600 dark:text-pink-400 mb-6 group-hover:scale-110 transition-transform" />
+              <h4 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Movement Register</h4>
+              <p className="text-gray-600 dark:text-gray-300">Digital leave request system with approval workflow and notifications.</p>
+            </Link>
           </div>
-
-          {error && (
-            <div className="flex items-center p-3 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 rounded-lg">
-              <AlertCircle className="h-4 w-4 mr-2 flex-shrink-0" />
-              <span className="text-sm">{error}</span>
-            </div>
-          )}
-
-          {loginAttempts > 0 && !isLockedOut && (
-            <div className="text-sm text-yellow-600 dark:text-yellow-400">
-              Failed attempts: {loginAttempts}/3
-            </div>
-          )}
-
-          <button
-            type="submit"
-            disabled={isLockedOut}
-            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 disabled:hover:scale-100"
-          >
-            {isLockedOut ? `Locked (${remainingTime}m remaining)` : 'Sign In'}
-          </button>
-        </form>
-
-        <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-          <p className="text-xs text-gray-600 dark:text-gray-400">
-            <strong>Demo Credentials:</strong><br />
-            Admin 1: roti / curry<br />
-            Admin 2: abhi / gobi
-          </p>
         </div>
-      </div>
+      </section>
     </div>
   );
 };
 
-export default LoginModal;
+export default Home;
