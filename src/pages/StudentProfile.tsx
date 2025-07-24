@@ -1,148 +1,343 @@
-import React, { useEffect, useState } from 'react';
-import { ChevronDown, Sparkles, Users, Award, TrendingUp } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import React from 'react';
+import { useParams, Link } from 'react-router-dom';
+import { ArrowLeft, Phone, Mail, MapPin, Calendar, Droplets, Award, BookOpen, Users, Edit3 } from 'lucide-react';
+import { useStudents } from '../contexts/StudentContext';
+import { useAuth } from '../contexts/AuthContext';
+import EditableContent from '../components/ui/EditableContent';
+import EditableImage from '../components/ui/EditableImage';
 
-const Home: React.FC = () => {
-  const [isVisible, setIsVisible] = useState(false);
+const StudentProfile: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
+  const { students, updateStudent } = useStudents();
+  const { isEditorMode } = useAuth();
+  
+  const student = students.find(s => s.id === id);
 
-  useEffect(() => {
-    setIsVisible(true);
-  }, []);
+  if (!student) {
+    return (
+      <div className="min-h-screen py-8 px-4 bg-gray-50 dark:bg-gradient-to-br dark:from-red-950 dark:via-red-900 dark:to-black">
+        <div className="max-w-4xl mx-auto text-center">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Student Not Found</h1>
+          <Link
+            to="/students"
+            className="inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Students
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
-  const scrollToContent = () => {
-    window.scrollTo({
-      top: window.innerHeight,
-      behavior: 'smooth'
-    });
+  const handleUpdateField = (field: string, value: any) => {
+    updateStudent(student.id, { [field]: value });
   };
 
-  const stats = [
-    { icon: Users, label: 'Total Students', value: '156', color: 'from-blue-500 to-blue-600' },
-    { icon: Award, label: 'Achievements', value: '47', color: 'from-purple-500 to-purple-600' },
-    { icon: TrendingUp, label: 'Academic Excellence', value: '94%', color: 'from-pink-500 to-pink-600' },
-    { icon: Sparkles, label: 'House Ranking', value: '#1', color: 'from-orange-500 to-orange-600' },
-  ];
+  const handleUpdateNestedField = (parentField: string, childField: string, value: any) => {
+    const updatedParent = { ...student[parentField as keyof typeof student], [childField]: value };
+    updateStudent(student.id, { [parentField]: updatedParent });
+  };
+
+  const handleUpdateArrayField = (field: string, newArray: string[]) => {
+    updateStudent(student.id, { [field]: newArray });
+  };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-transparent">
-      {/* Hero Section */}
-      <section className="h-screen flex flex-col items-center justify-center px-4 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-red-100/50 to-pink-100/50 dark:from-red-900/30 dark:to-black/50"></div>
-        <div className="absolute inset-0">
-          <div className="absolute top-20 left-20 w-72 h-72 bg-red-200/30 dark:bg-red-500/20 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-20 right-20 w-96 h-96 bg-red-300/30 dark:bg-red-600/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        </div>
-        
-        <div className={`text-center z-10 transition-all duration-1000 ${
-          isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-        }`}>
-          <h1 className="text-6xl md:text-8xl font-bold mb-6 bg-gradient-to-r from-gray-900 via-purple-600 to-pink-600 dark:from-white dark:via-purple-200 dark:to-pink-200 bg-clip-text text-transparent">
-            Welcome to
-          </h1>
-          <h2 className="text-4xl md:text-6xl font-bold mb-8 bg-gradient-to-r from-red-600 to-red-800 dark:from-red-400 dark:to-red-300 bg-clip-text text-transparent">
-            Shiwalik House
-          </h2>
-          <p className="text-xl md:text-2xl text-gray-700 dark:text-gray-300 mb-12 max-w-2xl leading-relaxed">
-            Excellence in Education, Character, and Leadership
-          </p>
+    <div className="min-h-screen py-8 px-4 bg-gray-50 dark:bg-gradient-to-br dark:from-red-950 dark:via-red-900 dark:to-black">
+      <div className="max-w-6xl mx-auto">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
+          <Link
+            to="/students"
+            className="inline-flex items-center px-4 py-2 bg-white/10 hover:bg-white/20 dark:bg-red-800/50 dark:hover:bg-red-700/50 text-gray-900 dark:text-white rounded-xl transition-all duration-200"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Students
+          </Link>
           
-          <div className="flex flex-col sm:flex-row gap-6 justify-center">
-            <Link
-              to="/students"
-              className="group bg-gradient-to-r from-red-600 to-red-800 hover:from-red-700 hover:to-red-900 text-white px-8 py-4 rounded-2xl font-semibold text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-xl"
-            >
-              Explore Students
-              <span className="inline-block ml-2 group-hover:translate-x-1 transition-transform">→</span>
-            </Link>
-            <Link
-              to="/about"
-              className="bg-white/80 hover:bg-white dark:bg-red-950/50 dark:hover:bg-red-950/70 backdrop-blur-sm text-gray-900 dark:text-white px-8 py-4 rounded-2xl font-semibold text-lg border border-gray-300 dark:border-red-700/50 hover:border-gray-400 dark:hover:border-red-600/70 transition-all duration-300 transform hover:scale-105"
-            >
-              About House
-            </Link>
-          </div>
+          {isEditorMode && (
+            <div className="flex items-center px-3 py-1 bg-gradient-to-r from-orange-500 to-red-500 text-white text-sm font-semibold rounded-full">
+              <Edit3 className="h-4 w-4 mr-2" />
+              Editor Mode Active
+            </div>
+          )}
         </div>
 
-        <button
-          onClick={scrollToContent}
-          className="absolute bottom-10 left-1/2 transform -translate-x-1/2 p-4 rounded-full bg-white/80 hover:bg-white dark:bg-red-950/50 dark:hover:bg-red-950/70 backdrop-blur-sm border border-gray-300 dark:border-red-700/50 hover:border-gray-400 dark:hover:border-red-600/70 transition-all duration-300 animate-bounce"
-        >
-          <ChevronDown className="h-6 w-6 text-gray-900 dark:text-white" />
-        </button>
-      </section>
+        {/* Student Profile Card */}
+        <div className="bg-white dark:bg-red-950/50 backdrop-blur-sm rounded-2xl border border-gray-200 dark:border-red-800/30 overflow-hidden mb-8">
+          {/* Header Section */}
+          <div className="bg-gradient-to-r from-red-600 to-red-800 p-8 text-white">
+            <div className="flex flex-col md:flex-row items-center md:items-start space-y-6 md:space-y-0 md:space-x-8">
+              {/* Student Photo */}
+              <div className="flex-shrink-0">
+                <EditableImage
+                  src={student.photo}
+                  alt={student.name}
+                  onImageChange={(newSrc) => handleUpdateField('photo', newSrc)}
+                  className="w-32 h-32 rounded-2xl object-cover border-4 border-white/20"
+                />
+              </div>
 
-      {/* Stats Section */}
-      <section className="py-20 px-4 bg-gray-50 dark:bg-transparent">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h3 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">House at a Glance</h3>
-            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-              Discover the achievements and excellence that define Shiwalik House
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {stats.map((stat, index) => {
-              const IconComponent = stat.icon;
-              return (
-                <div
-                  key={index}
-                  className="group bg-white dark:bg-red-950/30 backdrop-blur-sm rounded-2xl p-8 border border-gray-200 dark:border-red-800/30 hover:border-gray-300 dark:hover:border-red-700/50 transition-all duration-300 transform hover:scale-105 hover:shadow-xl"
-                >
-                  <div className={`inline-flex p-4 rounded-2xl bg-gradient-to-r ${index === 0 ? 'from-red-500 to-red-600' : index === 1 ? 'from-red-600 to-red-700' : index === 2 ? 'from-red-700 to-red-800' : 'from-red-800 to-red-900'} mb-6 group-hover:scale-110 transition-transform duration-300`}>
-                    <IconComponent className="h-8 w-8 text-white" />
+              {/* Basic Info */}
+              <div className="flex-1 text-center md:text-left">
+                <EditableContent
+                  content={student.name}
+                  onSave={(value) => handleUpdateField('name', value)}
+                  className="text-3xl font-bold mb-2"
+                />
+                
+                <div className="flex flex-wrap gap-4 text-red-100 mb-4">
+                  <div className="flex items-center">
+                    <BookOpen className="h-4 w-4 mr-2" />
+                    <span>Class </span>
+                    <EditableContent
+                      content={student.class.toString()}
+                      onSave={(value) => handleUpdateField('class', parseInt(value))}
+                      className="ml-1"
+                    />
+                    <EditableContent
+                      content={student.section}
+                      onSave={(value) => handleUpdateField('section', value)}
+                      className="ml-1"
+                    />
                   </div>
-                  <h4 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">{stat.value}</h4>
-                  <p className="text-gray-600 dark:text-gray-300 font-medium">{stat.label}</p>
+                  
+                  <div className="flex items-center">
+                    <Users className="h-4 w-4 mr-2" />
+                    <span>Roll </span>
+                    <EditableContent
+                      content={student.rollNumber}
+                      onSave={(value) => handleUpdateField('rollNumber', value)}
+                      className="ml-1"
+                    />
+                  </div>
+                  
+                  <div className="flex items-center">
+                    <Droplets className="h-4 w-4 mr-2" />
+                    <EditableContent
+                      content={student.bloodGroup}
+                      onSave={(value) => handleUpdateField('bloodGroup', value)}
+                    />
+                  </div>
                 </div>
-              );
-            })}
+
+                <div className="inline-flex items-center px-3 py-1 bg-white/20 rounded-full text-sm font-semibold">
+                  <EditableContent
+                    content={student.house}
+                    onSave={(value) => handleUpdateField('house', value)}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Details Section */}
+          <div className="p-8">
+            <div className="grid lg:grid-cols-2 gap-8">
+              {/* Personal Information */}
+              <div className="space-y-6">
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Personal Information</h3>
+                
+                <div className="space-y-4">
+                  <div className="flex items-center p-4 bg-gray-50 dark:bg-red-900/20 rounded-xl">
+                    <Calendar className="h-5 w-5 text-red-600 mr-3" />
+                    <div>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">Date of Birth</p>
+                      <EditableContent
+                        content={new Date(student.dateOfBirth).toLocaleDateString()}
+                        onSave={(value) => handleUpdateField('dateOfBirth', value)}
+                        className="font-semibold text-gray-900 dark:text-white"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex items-start p-4 bg-gray-50 dark:bg-red-900/20 rounded-xl">
+                    <MapPin className="h-5 w-5 text-red-600 mr-3 mt-1" />
+                    <div className="flex-1">
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Address</p>
+                      <EditableContent
+                        content={student.address}
+                        onSave={(value) => handleUpdateField('address', value)}
+                        className="text-gray-900 dark:text-white"
+                        multiline
+                      />
+                    </div>
+                  </div>
+
+                  <div className="p-4 bg-gray-50 dark:bg-red-900/20 rounded-xl">
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Identification Mark</p>
+                    <EditableContent
+                      content={student.identificationMark}
+                      onSave={(value) => handleUpdateField('identificationMark', value)}
+                      className="text-gray-900 dark:text-white"
+                    />
+                  </div>
+                </div>
+
+                {/* Hobbies */}
+                <div>
+                  <h4 className="text-lg font-bold text-gray-900 dark:text-white mb-3">Hobbies & Interests</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {student.hobbies.map((hobby, index) => (
+                      <span
+                        key={index}
+                        className="px-3 py-1 bg-red-100 dark:bg-red-800/30 text-red-800 dark:text-red-300 rounded-full text-sm"
+                      >
+                        {hobby}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Achievements */}
+                <div>
+                  <h4 className="text-lg font-bold text-gray-900 dark:text-white mb-3">Achievements</h4>
+                  <div className="space-y-2">
+                    {student.achievements.map((achievement, index) => (
+                      <div key={index} className="flex items-start">
+                        <Award className="h-4 w-4 text-yellow-500 mr-2 mt-1 flex-shrink-0" />
+                        <span className="text-gray-700 dark:text-gray-300 text-sm">{achievement}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Family Information */}
+              <div className="space-y-6">
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Family Information</h3>
+                
+                {/* Father Details */}
+                <div className="bg-gray-50 dark:bg-red-900/20 rounded-xl p-6">
+                  <h4 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Father</h4>
+                  <div className="flex items-start space-x-4">
+                    <EditableImage
+                      src={student.parentDetails.father.photo}
+                      alt={student.parentDetails.father.name}
+                      onImageChange={(newSrc) => handleUpdateNestedField('parentDetails', 'father', { ...student.parentDetails.father, photo: newSrc })}
+                      className="w-16 h-16 rounded-xl object-cover"
+                    />
+                    <div className="flex-1 space-y-2">
+                      <EditableContent
+                        content={student.parentDetails.father.name}
+                        onSave={(value) => handleUpdateNestedField('parentDetails', 'father', { ...student.parentDetails.father, name: value })}
+                        className="font-semibold text-gray-900 dark:text-white"
+                      />
+                      <EditableContent
+                        content={student.parentDetails.father.occupation}
+                        onSave={(value) => handleUpdateNestedField('parentDetails', 'father', { ...student.parentDetails.father, occupation: value })}
+                        className="text-gray-600 dark:text-gray-400 text-sm"
+                      />
+                      <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
+                        <Phone className="h-4 w-4 mr-2" />
+                        <EditableContent
+                          content={student.parentDetails.father.contact}
+                          onSave={(value) => handleUpdateNestedField('parentDetails', 'father', { ...student.parentDetails.father, contact: value })}
+                        />
+                      </div>
+                      <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
+                        <Mail className="h-4 w-4 mr-2" />
+                        <EditableContent
+                          content={student.parentDetails.father.email}
+                          onSave={(value) => handleUpdateNestedField('parentDetails', 'father', { ...student.parentDetails.father, email: value })}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Mother Details */}
+                <div className="bg-gray-50 dark:bg-red-900/20 rounded-xl p-6">
+                  <h4 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Mother</h4>
+                  <div className="flex items-start space-x-4">
+                    <EditableImage
+                      src={student.parentDetails.mother.photo}
+                      alt={student.parentDetails.mother.name}
+                      onImageChange={(newSrc) => handleUpdateNestedField('parentDetails', 'mother', { ...student.parentDetails.mother, photo: newSrc })}
+                      className="w-16 h-16 rounded-xl object-cover"
+                    />
+                    <div className="flex-1 space-y-2">
+                      <EditableContent
+                        content={student.parentDetails.mother.name}
+                        onSave={(value) => handleUpdateNestedField('parentDetails', 'mother', { ...student.parentDetails.mother, name: value })}
+                        className="font-semibold text-gray-900 dark:text-white"
+                      />
+                      <EditableContent
+                        content={student.parentDetails.mother.occupation}
+                        onSave={(value) => handleUpdateNestedField('parentDetails', 'mother', { ...student.parentDetails.mother, occupation: value })}
+                        className="text-gray-600 dark:text-gray-400 text-sm"
+                      />
+                      <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
+                        <Phone className="h-4 w-4 mr-2" />
+                        <EditableContent
+                          content={student.parentDetails.mother.contact}
+                          onSave={(value) => handleUpdateNestedField('parentDetails', 'mother', { ...student.parentDetails.mother, contact: value })}
+                        />
+                      </div>
+                      <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
+                        <Mail className="h-4 w-4 mr-2" />
+                        <EditableContent
+                          content={student.parentDetails.mother.email}
+                          onSave={(value) => handleUpdateNestedField('parentDetails', 'mother', { ...student.parentDetails.mother, email: value })}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Emergency Contact */}
+                <div className="bg-red-50 dark:bg-red-900/30 rounded-xl p-4 border border-red-200 dark:border-red-700/50">
+                  <h4 className="text-lg font-bold text-red-800 dark:text-red-300 mb-2">Emergency Contact</h4>
+                  <div className="flex items-center">
+                    <Phone className="h-4 w-4 text-red-600 mr-2" />
+                    <EditableContent
+                      content={student.parentDetails.emergencyContact}
+                      onSave={(value) => handleUpdateNestedField('parentDetails', 'emergencyContact', value)}
+                      className="font-semibold text-red-800 dark:text-red-300"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-      </section>
 
-      {/* Features Section */}
-      <section className="py-20 px-4 bg-white dark:bg-transparent">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h3 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">What We Offer</h3>
-            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-              Comprehensive management and tracking for all aspects of student life
-            </p>
+        {/* Academic Records */}
+        {student.academicRecords.length > 0 && (
+          <div className="bg-white dark:bg-red-950/50 backdrop-blur-sm rounded-2xl border border-gray-200 dark:border-red-800/30 p-8">
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Academic Records</h3>
+            
+            {student.academicRecords.map((record, index) => (
+              <div key={index} className="mb-8 last:mb-0">
+                <div className="flex items-center justify-between mb-4">
+                  <h4 className="text-lg font-bold text-gray-900 dark:text-white">{record.semester}</h4>
+                  <div className="text-right">
+                    <p className="text-2xl font-bold text-red-600">{record.percentage}%</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Grade: {record.grade}</p>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {record.subjects.map((subject, subIndex) => (
+                    <div key={subIndex} className="bg-gray-50 dark:bg-red-900/20 rounded-xl p-4">
+                      <h5 className="font-semibold text-gray-900 dark:text-white mb-2">{subject.name}</h5>
+                      <div className="flex items-center justify-between">
+                        <span className="text-2xl font-bold text-red-600">{subject.marks}</span>
+                        <span className="px-2 py-1 bg-red-100 dark:bg-red-800/30 text-red-800 dark:text-red-300 rounded text-sm font-semibold">
+                          {subject.grade}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
           </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <Link
-              to="/students"
-              className="group bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/50 dark:to-red-800/50 backdrop-blur-sm rounded-2xl p-8 border border-red-200 dark:border-red-700/30 hover:border-red-300 dark:hover:border-red-600/50 transition-all duration-300 transform hover:scale-105"
-            >
-              <Users className="h-12 w-12 text-red-600 dark:text-red-400 mb-6 group-hover:scale-110 transition-transform" />
-              <h4 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Student Management</h4>
-              <p className="text-gray-600 dark:text-gray-300">Complete student profiles with academic records, family details, and achievements.</p>
-            </Link>
-
-            <Link
-              to="/academic"
-              className="group bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/40 dark:to-red-800/40 backdrop-blur-sm rounded-2xl p-8 border border-red-200 dark:border-red-700/30 hover:border-red-300 dark:hover:border-red-600/50 transition-all duration-300 transform hover:scale-105"
-            >
-              <Award className="h-12 w-12 text-red-600 dark:text-red-400 mb-6 group-hover:scale-110 transition-transform" />
-              <h4 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Academic Performance</h4>
-              <p className="text-gray-600 dark:text-gray-300">Track grades, performance trends, and academic achievements across all classes.</p>
-            </Link>
-
-            <Link
-              to="/movement"
-              className="group bg-gradient-to-br from-pink-50 to-pink-100 dark:from-pink-900/50 dark:to-pink-800/50 backdrop-blur-sm rounded-2xl p-8 border border-pink-200 dark:border-pink-500/30 hover:border-pink-300 dark:hover:border-pink-400/50 transition-all duration-300 transform hover:scale-105"
-            >
-              <TrendingUp className="h-12 w-12 text-pink-600 dark:text-pink-400 mb-6 group-hover:scale-110 transition-transform" />
-              <h4 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Movement Register</h4>
-              <p className="text-gray-600 dark:text-gray-300">Digital leave request system with approval workflow and notifications.</p>
-            </Link>
-          </div>
-        </div>
-      </section>
+        )}
+      </div>
     </div>
   );
 };
 
-export default Home;
+export default StudentProfile;

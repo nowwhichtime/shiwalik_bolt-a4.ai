@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Sun, Moon, Bell, User, Home, Users, Award, TrendingUp, BookOpen } from 'lucide-react';
+import { Menu, X, Sun, Moon, Bell, User, Home, Users, Award, TrendingUp, BookOpen, Shield } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useNotifications } from '../contexts/NotificationContext';
@@ -26,6 +26,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     { name: 'About House', href: '/about', icon: BookOpen },
   ];
 
+  const adminNavigation = [
+    { name: 'Admin Block', href: '/admin-block', icon: Shield },
+  ];
   const isActive = (path: string) => location.pathname === path;
 
   return (
@@ -66,6 +69,25 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                       isActive(item.href)
                         ? 'bg-gradient-to-r from-red-600 to-red-700 text-white shadow-lg'
                         : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-red-800/50 hover:text-gray-900 dark:hover:text-white'
+                    }`}
+                  >
+                    <IconComponent className="h-4 w-4 mr-2" />
+                    {item.name}
+                  </Link>
+                );
+              })}
+              
+              {/* Admin Navigation */}
+              {isAuthenticated && adminNavigation.map((item) => {
+                const IconComponent = item.icon;
+                return (
+                  <Link
+                    key={item.name}
+                    to={item.href}
+                    className={`flex items-center px-4 py-2 rounded-xl font-medium transition-all duration-200 ${
+                      isActive(item.href)
+                        ? 'bg-gradient-to-r from-orange-600 to-red-700 text-white shadow-lg'
+                        : 'text-orange-600 dark:text-orange-400 hover:bg-orange-100 dark:hover:bg-orange-800/50 hover:text-orange-700 dark:hover:text-orange-300'
                     }`}
                   >
                     <IconComponent className="h-4 w-4 mr-2" />
@@ -130,6 +152,26 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                       isActive(item.href)
                         ? 'bg-gradient-to-r from-red-600 to-red-700 text-white'
                         : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-red-800/50'
+                    }`}
+                  >
+                    <IconComponent className="h-5 w-5 mr-3" />
+                    {item.name}
+                  </Link>
+                );
+              })}
+              
+              {/* Admin Mobile Navigation */}
+              {isAuthenticated && adminNavigation.map((item) => {
+                const IconComponent = item.icon;
+                return (
+                  <Link
+                    key={item.name}
+                    to={item.href}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`flex items-center px-4 py-3 rounded-xl font-medium transition-all duration-200 ${
+                      isActive(item.href)
+                        ? 'bg-gradient-to-r from-orange-600 to-red-700 text-white'
+                        : 'text-orange-600 dark:text-orange-400 hover:bg-orange-100 dark:hover:bg-orange-800/50'
                     }`}
                   >
                     <IconComponent className="h-5 w-5 mr-3" />

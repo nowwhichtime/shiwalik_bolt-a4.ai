@@ -1,13 +1,15 @@
 import React, { useState, useMemo } from 'react';
-import { Search, Filter, Plus, Upload, Download } from 'lucide-react';
+import { Search, Filter, Plus, Upload, Download, UserPlus } from 'lucide-react';
 import { useStudents } from '../contexts/StudentContext';
 import { useAuth } from '../contexts/AuthContext';
 import StudentCard from '../components/student/StudentCard';
+import AddStudentModal from '../components/student/AddStudentModal';
 
 const StudentDetails: React.FC = () => {
   const { students, searchQuery, setSearchQuery, classFilter, setClassFilter } = useStudents();
   const { isAuthenticated, isEditorMode } = useAuth();
   const [sortBy, setSortBy] = useState<'name' | 'class' | 'performance'>('name');
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   const classes = Array.from(new Set(students.map(s => s.class))).sort((a, b) => a - b);
 
@@ -84,6 +86,13 @@ const StudentDetails: React.FC = () => {
             {/* Admin Controls */}
             {isAuthenticated && isEditorMode && (
               <div className="flex gap-2">
+                <button
+                  onClick={() => setIsAddModalOpen(true)}
+                  className="flex items-center px-4 py-2 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white rounded-xl font-semibold transition-all duration-200 transform hover:scale-105"
+                >
+                  <UserPlus className="h-4 w-4 mr-2" />
+                  Add Student
+                </button>
                 <button
                   onClick={handleExcelImport}
                   className="flex items-center px-4 py-2 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white rounded-xl font-semibold transition-all duration-200 transform hover:scale-105"
@@ -162,6 +171,12 @@ const StudentDetails: React.FC = () => {
           </div>
         )}
       </div>
+      
+      {/* Add Student Modal */}
+      <AddStudentModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+      />
     </div>
   );
 };

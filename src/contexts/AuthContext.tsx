@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState } from 'react';
+import { useNotifications } from './NotificationContext';
 
 interface User {
+  id: string;
   username: string;
   isAdmin: boolean;
 }
@@ -11,18 +13,34 @@ interface AuthContextType {
   isEditorMode: boolean;
   loginAttempts: number;
   lockoutTime: Date | null;
+  adminUsers: User[];
   login: (username: string, password: string) => boolean;
   logout: () => void;
   toggleEditorMode: () => void;
+  addAdminUser: (username: string, password: string) => boolean;
+  removeAdminUser: (userId: string) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { addNotification } = useNotifications();
   const [user, setUser] = useState<User | null>(null);
   const [isEditorMode, setIsEditorMode] = useState(false);
   const [loginAttempts, setLoginAttempts] = useState(0);
   const [lockoutTime, setLockoutTime] = useState<Date | null>(null);
+  
+  // In-memory admin users storage (will reset on page refresh)
+  const [adminUsers, setAdminUsers] = useState<User[]>([
+    { id: '1', username: 'roti', isAdmin: true },
+    { id: '2', username: 'abhi', isAdmin: true }
+  ]);
+  
+  // In-memory password storage (in real app, this would be hashed and stored securely)
+  const [adminPasswords] = useState<Record<string, string>>({
+    'roti': 'curry',
+    'abhi': 'gobi'
+  });
 
   const login = (username: string, password: string): boolean => {
     // Check if locked out
@@ -30,11 +48,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return false;
     }
 
-    // Admin credentials
-    if ((username === 'roti' && password === 'curry') || (username === 'abhi' && password === 'gobi')) {
-      setUser({ username, isAdmin: true });
+    // Check admin credentials
+    const adminUser = adminUsers.find(u => u.username === username);
+    if (adminUser && adminPasswords[username] === password) {
+      setUser(adminUser);
       setLoginAttempts(0);
       setLockoutTime(null);
+      addNotification(`Logged in successfully as ${username}!`);
       return true;
     }
 
@@ -52,13 +72,46 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const logout = () => {
+    if (user) {
+      addNotification(`Logged out successfully. Goodbye ${user.username}!`);
+    }
     setUser(null);
     setIsEditorMode(false);
   };
 
   const toggleEditorMode = () => {
     if (user?.isAdmin) {
-      setIsEditorMode(!isEditorMode);
+      const newMode = !isEditorMode;
+      setIsEditorMode(newMode);
+      addNotification(newMode ? 'Editor mode enabled' : 'Editor mode disabled');
+    }
+  };
+
+  const addAdminUser = (username: string, password: string): boolean => {
+    // Check if username already exists
+    if (adminUsers.some(u => u.username === username)) {
+      return false;
+    }
+
+    const newUser: User = {
+      id: Date.now().toString(),
+      username,
+      isAdmin: true
+    };
+
+    setAdminUsers(prev => [...prev, newUser]);
+    // Note: In a real app, passwords would be hashed
+    adminPasswords[username] = password;
+    addNotification(`Admin user '${username}' created successfully`);
+    return true;
+  };
+
+  const removeAdminUser = (userId: string) => {
+    const userToRemove = adminUsers.find(u => u.id === userId);
+    if (userToRemove) {
+      setAdminUsers(prev => prev.filter(u => u.id !== userId));
+      delete adminPasswords[userToRemove.username];
+      addNotification(`Admin user '${userToRemove.username}' removed successfully`);
     }
   };
 
@@ -70,9 +123,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isEditorMode,
         loginAttempts,
         lockoutTime,
+        adminUsers,
         login,
         logout,
         toggleEditorMode,
+        addAdminUser,
+        removeAdminUser,
       }}
     >
       {children}

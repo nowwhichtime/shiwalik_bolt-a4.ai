@@ -11,6 +11,7 @@ import StudentProfile from './pages/StudentProfile';
 import AcademicPerformance from './pages/AcademicPerformance';
 import MovementRegister from './pages/MovementRegister';
 import AboutHouse from './pages/AboutHouse';
+import AdminBlock from './pages/AdminBlock';
 import LoginModal from './components/auth/LoginModal';
 
 function App() {
@@ -29,6 +30,7 @@ function App() {
                     <Route path="/academic" element={<AcademicPerformance />} />
                     <Route path="/movement" element={<MovementRegister />} />
                     <Route path="/about" element={<AboutHouse />} />
+                    <Route path="/admin-block" element={<AdminBlock />} />
                   </Routes>
                 </Layout>
                 <LoginModal />
