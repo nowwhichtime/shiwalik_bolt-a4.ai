@@ -247,11 +247,12 @@ const MovementRegister: React.FC = () => {
           )}
         </div>
 
-      {/* Leave Application Modal */}
-      <LeaveApplicationModal
-        isOpen={isApplicationModalOpen}
-        onClose={() => setIsApplicationModalOpen(false)}
-      />
+        {/* Leave Application Modal */}
+        <LeaveApplicationModal
+          isOpen={isApplicationModalOpen}
+          onClose={() => setIsApplicationModalOpen(false)}
+        />
+      </div>
     </div>
   );
 };
