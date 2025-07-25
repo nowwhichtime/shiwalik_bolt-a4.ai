@@ -1,10 +1,17 @@
 import React, { useState, useMemo } from 'react';
 import { TrendingUp, Award, Users, BookOpen } from 'lucide-react';
 import { useStudents } from '../contexts/StudentContext';
+import { useAuth } from '../contexts/AuthContext';
+import EditableContent from '../components/ui/EditableContent';
 
 const AcademicPerformance: React.FC = () => {
+  const { isEditorMode } = useAuth();
   const { students } = useStudents();
   const [selectedClass, setSelectedClass] = useState<string>('');
+  const [pageContent, setPageContent] = useState({
+    title: 'Academic Performance',
+    subtitle: 'Track academic excellence and achievements across all classes'
+  });
 
   const classes = Array.from(new Set(students.map(s => s.class))).sort((a, b) => a - b);
 
@@ -59,10 +66,16 @@ const AcademicPerformance: React.FC = () => {
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-gray-900 to-purple-600 dark:from-white dark:to-purple-200 bg-clip-text text-transparent">
-            Academic Performance
+            <EditableContent
+              content={pageContent.title}
+              onSave={(value) => setPageContent(prev => ({ ...prev, title: value }))}
+            />
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            Track academic excellence and achievements across all classes
+            <EditableContent
+              content={pageContent.subtitle}
+              onSave={(value) => setPageContent(prev => ({ ...prev, subtitle: value }))}
+            />
           </p>
         </div>
 

@@ -11,6 +11,10 @@ interface LeaveRequest {
   parentContact: string;
   status: 'pending' | 'approved' | 'rejected';
   submittedAt: string;
+  parentType?: string;
+  parentName?: string;
+  house?: string;
+  photoUrl?: string;
 }
 
 interface NotificationContextType {

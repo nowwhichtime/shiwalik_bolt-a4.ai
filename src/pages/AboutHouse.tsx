@@ -1,7 +1,16 @@
 import React from 'react';
 import { Mail, Phone, Award, Users, Calendar, MapPin, Star, BookOpen } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
+import EditableContent from '../components/ui/EditableContent';
+import EditableImage from '../components/ui/EditableImage';
 
 const AboutHouse: React.FC = () => {
+  const { isEditorMode } = useAuth();
+  const [pageContent, setPageContent] = React.useState({
+    title: 'About Shiwalik House',
+    subtitle: 'A home away from home where excellence meets character'
+  });
+
   const houseMaster = {
     name: 'Dr. Rajesh Kumar',
     designation: 'House Master, Shiwalik House',
@@ -86,10 +95,16 @@ const AboutHouse: React.FC = () => {
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-gray-900 to-purple-600 dark:from-white dark:to-purple-200 bg-clip-text text-transparent">
-            About Shiwalik House
+            <EditableContent
+              content={pageContent.title}
+              onSave={(value) => setPageContent(prev => ({ ...prev, title: value }))}
+            />
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            A home away from home where excellence meets character
+            <EditableContent
+              content={pageContent.subtitle}
+              onSave={(value) => setPageContent(prev => ({ ...prev, subtitle: value }))}
+            />
           </p>
         </div>
 
@@ -103,16 +118,34 @@ const AboutHouse: React.FC = () => {
             <div className="grid lg:grid-cols-3 gap-8">
               <div className="lg:col-span-1">
                 <div className="text-center">
-                  <div className="w-48 h-48 mx-auto rounded-3xl overflow-hidden border-4 border-purple-500/30 mb-6">
-                    <img
-                      src={houseMaster.photo}
-                      alt={houseMaster.name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
+                  <EditableImage
+                    src={houseMaster.photo}
+                    alt={houseMaster.name}
+                    onImageChange={(newSrc) => {
+                      // In a real app, this would update the houseMaster data
+                      console.log('Update house master photo:', newSrc);
+                    }}
+                    className="w-48 h-48 mx-auto rounded-3xl object-cover border-4 border-purple-500/30 mb-6"
+                  />
                   
-                  <h3 className="text-2xl font-bold text-white mb-2">{houseMaster.name}</h3>
-                  <p className="text-purple-300 font-semibold mb-4">{houseMaster.designation}</p>
+                  <h3 className="text-2xl font-bold text-white mb-2">
+                    <EditableContent
+                      content={houseMaster.name}
+                      onSave={(value) => {
+                        // In a real app, this would update the houseMaster data
+                        console.log('Update house master name:', value);
+                      }}
+                    />
+                  </h3>
+                  <p className="text-purple-300 font-semibold mb-4">
+                    <EditableContent
+                      content={houseMaster.designation}
+                      onSave={(value) => {
+                        // In a real app, this would update the houseMaster data
+                        console.log('Update house master designation:', value);
+                      }}
+                    />
+                  </p>
                   
                   <div className="space-y-3">
                     <div className="flex items-center justify-center text-gray-300">

@@ -1,9 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { ChevronDown, Sparkles, Users, Award, TrendingUp } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import EditableContent from '../components/ui/EditableContent';
 
 const Home: React.FC = () => {
+  const { isEditorMode } = useAuth();
   const [isVisible, setIsVisible] = useState(false);
+  const [homeContent, setHomeContent] = useState({
+    title: 'Welcome to',
+    subtitle: 'Shiwalik House',
+    description: 'Excellence in Education, Character, and Leadership',
+    sectionTitle: 'House at a Glance',
+    sectionDescription: 'Discover the achievements and excellence that define Shiwalik House',
+    featuresTitle: 'What We Offer',
+    featuresDescription: 'Comprehensive management and tracking for all aspects of student life'
+  });
 
   useEffect(() => {
     setIsVisible(true);
@@ -37,13 +49,22 @@ const Home: React.FC = () => {
           isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
         }`}>
           <h1 className="text-6xl md:text-8xl font-bold mb-6 bg-gradient-to-r from-gray-900 via-purple-600 to-pink-600 dark:from-white dark:via-purple-200 dark:to-pink-200 bg-clip-text text-transparent">
-            Welcome to
+            <EditableContent
+              content={homeContent.title}
+              onSave={(value) => setHomeContent(prev => ({ ...prev, title: value }))}
+            />
           </h1>
           <h2 className="text-4xl md:text-6xl font-bold mb-8 bg-gradient-to-r from-red-600 to-red-800 dark:from-red-400 dark:to-red-300 bg-clip-text text-transparent">
-            Shiwalik House
+            <EditableContent
+              content={homeContent.subtitle}
+              onSave={(value) => setHomeContent(prev => ({ ...prev, subtitle: value }))}
+            />
           </h2>
           <p className="text-xl md:text-2xl text-gray-700 dark:text-gray-300 mb-12 max-w-2xl leading-relaxed">
-            Excellence in Education, Character, and Leadership
+            <EditableContent
+              content={homeContent.description}
+              onSave={(value) => setHomeContent(prev => ({ ...prev, description: value }))}
+            />
           </p>
           
           <div className="flex flex-col sm:flex-row gap-6 justify-center">
@@ -75,9 +96,17 @@ const Home: React.FC = () => {
       <section className="py-20 px-4 bg-gray-50 dark:bg-transparent">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h3 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">House at a Glance</h3>
+            <h3 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+              <EditableContent
+                content={homeContent.sectionTitle}
+                onSave={(value) => setHomeContent(prev => ({ ...prev, sectionTitle: value }))}
+              />
+            </h3>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-              Discover the achievements and excellence that define Shiwalik House
+              <EditableContent
+                content={homeContent.sectionDescription}
+                onSave={(value) => setHomeContent(prev => ({ ...prev, sectionDescription: value }))}
+              />
             </p>
           </div>
 
@@ -105,9 +134,17 @@ const Home: React.FC = () => {
       <section className="py-20 px-4 bg-white dark:bg-transparent">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h3 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">What We Offer</h3>
+            <h3 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+              <EditableContent
+                content={homeContent.featuresTitle}
+                onSave={(value) => setHomeContent(prev => ({ ...prev, featuresTitle: value }))}
+              />
+            </h3>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-              Comprehensive management and tracking for all aspects of student life
+              <EditableContent
+                content={homeContent.featuresDescription}
+                onSave={(value) => setHomeContent(prev => ({ ...prev, featuresDescription: value }))}
+              />
             </p>
           </div>
 

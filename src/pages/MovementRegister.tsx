@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
-import { Clock, CheckCircle, XCircle, Calendar, User, Phone, FileText } from 'lucide-react';
+import { Clock, CheckCircle, XCircle, Calendar, User, Phone, FileText, Plus } from 'lucide-react';
 import { useNotifications } from '../contexts/NotificationContext';
 import { useAuth } from '../contexts/AuthContext';
+import LeaveApplicationModal from '../components/leave/LeaveApplicationModal';
 
 const MovementRegister: React.FC = () => {
   const { leaveRequests, updateRequestStatus } = useNotifications();
   const { isAuthenticated } = useAuth();
   const [selectedTab, setSelectedTab] = useState<'pending' | 'all'>('pending');
+  const [isApplicationModalOpen, setIsApplicationModalOpen] = useState(false);
 
   const pendingRequests = leaveRequests.filter(req => req.status === 'pending');
   const allRequests = leaveRequests.sort((a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime());
@@ -104,29 +106,46 @@ const MovementRegister: React.FC = () => {
           </button>
         </div>
 
-        {/* Google Form Integration Section */}
-        <div className="mb-12">
-          <div className="bg-gradient-to-br from-blue-900/50 to-purple-900/50 backdrop-blur-sm rounded-2xl p-8 border border-blue-500/30">
-            <div className="text-center">
-              <h2 className="text-2xl font-bold text-white mb-4">Submit Leave Request</h2>
-              <p className="text-gray-300 mb-6">
-                Use the form below to submit a new leave request. All submissions will be reviewed by the house administration.
-              </p>
-              
-              {/* Placeholder for Google Form */}
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
-                <div className="text-center py-12">
-                  <FileText className="h-16 w-16 text-blue-400 mx-auto mb-4" />
-                  <h3 className="text-xl font-bold text-white mb-2">Google Form Integration</h3>
-                  <p className="text-gray-400 mb-4">
-                    The leave request form will be embedded here once Google Forms is configured.
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    Form will include: Student details, dates, reason, parent contact, and photo uploads
-                  </p>
-                </div>
-              </div>
-            </div>
+        {/* Apply for Leave Section */}
+        <div className="mb-12 text-center">
+          <button
+            onClick={() => setIsApplicationModalOpen(true)}
+            className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold text-lg rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-lg"
+          >
+            <Plus className="h-6 w-6 mr-3" />
+            Apply for Leave
+          </button>
+          <p className="text-gray-400 mt-4 text-sm">
+            Click to submit a new leave request with all required details
+          </p>
+        </div>
+
+        {/* Leave Requests Log */}
+        <div className="mb-8">
+          <h2 className="text-3xl font-bold text-white text-center mb-8">Leave Requests Log</h2>
+          
+          {/* Tab Navigation */}
+          <div className="flex space-x-1 bg-white/10 backdrop-blur-sm rounded-xl p-1 mb-8 w-fit mx-auto">
+            <button
+              onClick={() => setSelectedTab('pending')}
+              className={`px-4 py-2 rounded-lg font-semibold transition-all duration-200 ${
+                selectedTab === 'pending'
+                  ? 'bg-white text-gray-900'
+                  : 'text-gray-300 hover:text-white hover:bg-white/10'
+              }`}
+            >
+              Pending ({pendingRequests.length})
+            </button>
+            <button
+              onClick={() => setSelectedTab('all')}
+              className={`px-4 py-2 rounded-lg font-semibold transition-all duration-200 ${
+                selectedTab === 'all'
+                  ? 'bg-white text-gray-900'
+                  : 'text-gray-300 hover:text-white hover:bg-white/10'
+              }`}
+            >
+              All Requests ({leaveRequests.length})
+            </button>
           </div>
         </div>
 
@@ -208,29 +227,11 @@ const MovementRegister: React.FC = () => {
                       <button
                         onClick={() => handleApproval(request.id, 'rejected')}
                         className="flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold transition-all duration-200 transform hover:scale-105"
-                      >
-                        <XCircle className="h-4 w-4 mr-2" />
-                        Reject
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))
-          ) : (
-            <div className="text-center py-16">
-              <Clock className="h-16 w-16 text-gray-400 mx-auto mb-4 opacity-50" />
-              <h3 className="text-xl font-bold text-white mb-2">No Requests Found</h3>
-              <p className="text-gray-400">
-                {selectedTab === 'pending' 
-                  ? 'No pending leave requests at the moment.' 
-                  : 'No leave requests have been submitted yet.'
-                }
-              </p>
-            </div>
-          )}
-        </div>
-      </div>
+      {/* Leave Application Modal */}
+      <LeaveApplicationModal
+        isOpen={isApplicationModalOpen}
+        onClose={() => setIsApplicationModalOpen(false)}
+      />
     </div>
   );
 };
