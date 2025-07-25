@@ -152,8 +152,6 @@ const MovementRegister: React.FC = () => {
         {/* Requests List */}
         <div className="space-y-6">
           {displayRequests.length > 0 ? (
-            )
-            }
             displayRequests.map((request) => (
               <div
                 key={request.id}
@@ -218,8 +216,6 @@ const MovementRegister: React.FC = () => {
 
                   {/* Action Buttons for Admins */}
                   {isAuthenticated && request.status === 'pending' && (
-                        )
-                        }
                     <div className="flex space-x-3 pt-4 border-t border-white/10">
                       <button
                         onClick={() => handleApproval(request.id, 'approved')}
@@ -231,15 +227,32 @@ const MovementRegister: React.FC = () => {
                       <button
                         onClick={() => handleApproval(request.id, 'rejected')}
                         className="flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold transition-all duration-200 transform hover:scale-105"
-            )
-            )
+                      >
+                        <XCircle className="h-4 w-4 mr-2" />
+                        Reject
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="text-center py-12">
+              <FileText className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-white mb-2">No requests found</h3>
+              <p className="text-gray-400">
+                {selectedTab === 'pending' ? 'No pending requests at the moment' : 'No leave requests have been submitted yet'}
+              </p>
+            </div>
+          )}
+        </div>
+
       {/* Leave Application Modal */}
       <LeaveApplicationModal
         isOpen={isApplicationModalOpen}
         onClose={() => setIsApplicationModalOpen(false)}
       />
     </div>
-  )
   );
 };
 
