@@ -253,6 +253,7 @@ const MovementRegister: React.FC = () => {
           onClose={() => setIsApplicationModalOpen(false)}
         />
       </div>
+      </div>
     </div>
   );
 };
