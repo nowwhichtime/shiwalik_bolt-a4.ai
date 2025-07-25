@@ -80,16 +80,36 @@ const DonateButton: React.FC = () => {
               {/* QR Code URL Editor for Admin */}
               {isEditorMode && (
                 <div className="mb-4 p-4 bg-orange-50 dark:bg-orange-900/20 rounded-xl border border-orange-200 dark:border-orange-700/50">
-                  <label className="block text-sm font-medium text-orange-800 dark:text-orange-300 mb-2">
-                    QR Code URL (Admin Only):
-                  </label>
-                  <input
-                    type="url"
-                    value={donateContent.qrCodeUrl}
-                    onChange={(e) => setDonateContent(prev => ({ ...prev, qrCodeUrl: e.target.value }))}
-                    className="w-full px-3 py-2 border border-orange-300 dark:border-orange-600 rounded-lg bg-white dark:bg-orange-900/30 text-gray-900 dark:text-white text-sm"
-                    placeholder="Enter QR code URL"
-                  />
+                  <div className="space-y-3">
+                    <label className="block text-sm font-medium text-orange-800 dark:text-orange-300">
+                      QR Code URL (Admin Only):
+                    </label>
+                    <input
+                      type="url"
+                      value={donateContent.qrCodeUrl}
+                      onChange={(e) => setDonateContent(prev => ({ ...prev, qrCodeUrl: e.target.value }))}
+                      className="w-full px-3 py-2 border border-orange-300 dark:border-orange-600 rounded-lg bg-white dark:bg-orange-900/30 text-gray-900 dark:text-white text-sm"
+                      placeholder="Enter QR code URL"
+                    />
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onload = (event) => {
+                              setDonateContent(prev => ({ ...prev, qrCodeUrl: event.target?.result as string }));
+                            };
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                        className="text-sm text-orange-700 dark:text-orange-300"
+                      />
+                      <span className="text-xs text-orange-600 dark:text-orange-400">Or upload image</span>
+                    </div>
+                  </div>
                 </div>
               )}
 

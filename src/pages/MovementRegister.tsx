@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Clock, CheckCircle, XCircle, Calendar, User, Phone, FileText, Plus } from 'lucide-react';
+import { Clock, CheckCircle, XCircle, Calendar, User, Phone, FileText, Plus, Camera } from 'lucide-react';
 import { useNotifications } from '../contexts/NotificationContext';
 import { useAuth } from '../contexts/AuthContext';
 import LeaveApplicationModal from '../components/leave/LeaveApplicationModal';
@@ -17,6 +17,39 @@ const MovementRegister: React.FC = () => {
 
   const handleApproval = (id: string, status: 'approved' | 'rejected') => {
     updateRequestStatus(id, status);
+    
+    // Show success message for approved requests
+    if (status === 'approved') {
+      // Create and show success notification
+      const notification = document.createElement('div');
+      notification.className = 'fixed top-4 right-4 z-[300] bg-green-500 text-white px-6 py-4 rounded-xl shadow-lg transform transition-all duration-300 translate-x-full';
+      notification.innerHTML = `
+        <div class="flex items-center space-x-3">
+          <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+          <div>
+            <p class="font-semibold">Leave Approved!</p>
+            <p class="text-sm opacity-90">Student has been notified</p>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(notification);
+      
+      // Animate in
+      setTimeout(() => {
+        notification.style.transform = 'translateX(0)';
+      }, 100);
+      
+      // Remove after 4 seconds
+      setTimeout(() => {
+        notification.style.transform = 'translateX(100%)';
+        setTimeout(() => {
+          document.body.removeChild(notification);
+        }, 300);
+      }, 4000);
+    }
   };
 
   const getStatusColor = (status: string) => {
@@ -213,6 +246,27 @@ const MovementRegister: React.FC = () => {
                       </div>
                     </div>
                   </div>
+
+                  {/* Photo Display for Admin */}
+                  {isAuthenticated && request.photoUrl && (
+                    <div className="bg-white/5 rounded-xl p-4 mb-4">
+                      <div className="flex items-center mb-3">
+                        <Camera className="h-5 w-5 text-purple-400 mr-2" />
+                        <p className="text-gray-300 font-semibold">Photo with Parent/Guardian</p>
+                      </div>
+                      <div className="bg-white p-2 rounded-lg inline-block">
+                        <img
+                          src={request.photoUrl}
+                          alt="Student with parent/guardian"
+                          className="max-w-xs max-h-48 rounded object-cover"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = 'none';
+                          }}
+                        />
+                      </div>
+                    </div>
+                  )}
 
                   {/* Action Buttons for Admins */}
                   {isAuthenticated && request.status === 'pending' && (
